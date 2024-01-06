@@ -74,6 +74,7 @@ var defer = typeof setImmediate === 'function'
  * @param {Function} [options.genid]
  * @param {String} [options.name=connect.sid] Session ID cookie name
  * @param {Boolean} [options.proxy]
+ * @param {Boolean} [options.setcookie] Set Set-Cookie HTTP header when finished
  * @param {Boolean} [options.resave] Resave unmodified sessions back to the store
  * @param {Boolean} [options.rolling] Enable/disable rolling session expiration
  * @param {Boolean} [options.saveUninitialized] Save uninitialized sessions to the store
@@ -105,6 +106,9 @@ function session(options) {
   // get the resave session option
   var resaveSession = opts.resave;
 
+  // get the resave session option
+  var setSetCookie = opts.setcookie;
+
   // get the rolling session option
   var rollingSessions = Boolean(opts.rolling)
 
@@ -121,6 +125,10 @@ function session(options) {
   if (resaveSession === undefined) {
     deprecate('undefined resave option; provide resave option');
     resaveSession = true;
+  }
+
+  if (setSetCookie === undefined) {
+    setSetCookie = true;
   }
 
   if (saveUninitializedSession === undefined) {
@@ -223,7 +231,7 @@ function session(options) {
         return;
       }
 
-      if (!shouldSetCookie(req)) {
+      if (!setSetCookie || !shouldSetCookie(req)) {
         return;
       }
 
